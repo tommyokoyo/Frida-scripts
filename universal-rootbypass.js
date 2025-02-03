@@ -79,6 +79,7 @@ Java.perform(function() {
 
     for (let propKey in DangerousProps) DangerousPropsKeys.push(propKey);
 
+
     /*-- System Properties check--*/
     SystemProperties.get.overload("java.lang.String").implementation = function(name) {
         console.log("[-] SystemProperties call intercepted: " + name);
@@ -97,12 +98,13 @@ Java.perform(function() {
 
             let suknownPaths = knownPaths.map(path => path = path + "su");
             let busyboxknownPaths = knownPaths.map(path => path = path + "busybox");
+            let magiskKnowPaths = knownPaths.map(path => path = path + "magisk");
 
             console.log("[-] fopen called on path: " + filePath + " with: " + args[1]);
 
             // Modify the path if it matches
-            if (!(suknownPaths.includes(filePath) && busyboxknownPaths.includes(filePath))) { //place holder for file seraching
-                console.log("[-] Returning NULL");
+            if (suknownPaths.includes(filePath) || busyboxknownPaths.includes(filePath) || magiskKnowPaths.includes(filePath)) { //place holder for file seraching
+                console.log("[-] Returning TRUE");
                 this.shouldReturnNull = true;
             }
         },
@@ -132,10 +134,11 @@ Java.perform(function() {
 
         let suknownPaths = knownPaths.map(path => path = path + "su");
         let busyboxknownPaths = knownPaths.map(path => path = path + "busybox");
+        let magiskKnowPaths = knownPaths.map(path => path = path + "magisk");
 
         console.log("[-] File.exist method called on: " + pathFetched);
 
-        if (!(suknownPaths.includes(pathFetched) && busyboxknownPaths.includes(pathFetched))) {
+        if (suknownPaths.includes(pathFetched) || busyboxknownPaths.includes(pathFetched) || magiskKnowPaths.includes(pathFetched)) {
             console.log("[-] Bypassing File fetch on: " + pathFetched);
             return false;
         } else {
@@ -155,7 +158,7 @@ Java.perform(function() {
             return this.getPackageInfo(packageName, flags);
         }
     };
-    
+ 
     /*-- Binary Detection--*/
     // Hook the Runtime.exec(String cmd)
     RunTime.getRuntime().exec.overload("java.lang.String").implementation = function (command) {
@@ -271,11 +274,11 @@ Java.perform(function() {
         }
         return this.get.call(this, name);
     };
-
+    /*
     System.loadLibrary.implementation = function(libraryName) {
         console.log("[-] System.loadLibray() call intercepted with: " + libraryName);
 
-        // Attempt to load library
+        // Attempt to load library (need to be reviewed)
         try{
             let result = this.loadLibrary(libraryName);
 
@@ -291,4 +294,5 @@ Java.perform(function() {
             return;
         } 
     };
+    */
 });
