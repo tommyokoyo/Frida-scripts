@@ -4,7 +4,7 @@ Java.perform(function () {
     }).forEach(function (range) {
         try {
             console.log('Dumping memory from:', range.base, 'Size:', range.size);
-            var memoryDump = Memory.readByteArray(range.base, Math.min(range.size, 4096));  // Dump at most 4096 bytes
+            let memoryDump = Memory.readByteArray(range.base, Math.min(range.size, 4096));  // Dump at most 4096 bytes
             console.log(hexdump(memoryDump, {
                 offset: 0,
                 length: 4096,
@@ -15,5 +15,4 @@ Java.perform(function () {
             console.log('Error reading memory at', range.base, ':', e.message);
         }
     });
-    
 });

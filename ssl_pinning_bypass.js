@@ -1,9 +1,8 @@
 Java.perform(function () {
-    let TrustManagerImpl = Java.use('com.android.org.conscrypt.TrustManagerImpl');
     let X509TrustManager = Java.use('javax.net.ssl.X509TrustManager');
     let CertificatePinner = Java.use("okhttp3.CertificatePinner");
     let SSLContext = Java.use('javax.net.ssl.SSLContext');
-    let HostnameVerifier = Java.use('javax.net.ssl.HostnameVerifier');
+
 
     // Hook SSLContext init method
     SSLContext.init.overload('[Ljavax.net.ssl.KeyManager;', '[Ljavax.net.ssl.TrustManager;', 'java.security.SecureRandom').implementation = function (keyManager, trustManager, secureRandom) {
@@ -41,7 +40,6 @@ Java.perform(function () {
         // skip pin validation
         return;
     };
-
 
     console.log("[-] SSL Pinning bypass complete...");
 
