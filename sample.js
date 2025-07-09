@@ -1,21 +1,25 @@
-Interceptor.attach(Module.findExportByName("libc.so.6", "write"), {
-    onEnter: function (args) {
-        // `args[0]`: file descriptor
-        // `args[1]`: pointer to the buffer
-        // `args[2]`: number of bytes to write
+Java.perform(function () {
+    console.log("=== [*] Searching for okhttp3.RequestBody ===");
 
-        // File descriptor
-        var fd = args[0].toInt32();
+    try {
+        var RequestBody = Java.use("okhttp3.RequestBody");
+        var Buffer = Java.use("okio.Buffer");
 
-        // Buffer and size
-        var buffer = args[1];
-        var count = args[2].toInt32();
+        RequestBody.writeTo.implementation = function (sink) {
+            console.log("[*] Detected okhttp3.RequestBody.writeTo");
 
-        // Only intercept writes to stdout (fd 1) for simplicity
-        if (fd === 1) {
-            var content = Memory.readUtf8String(buffer, count);
-            console.log("Intercepted write syscall:");
-            console.log("FD: " + fd + ", Content: \"" + content + "\", Count: " + count);
-        }
+            var buffer = Buffer.$new();
+            this.writeTo(buffer);
+            var data = buffer.readUtf8();
+            console.log("[OkHttp Request Body] " + data);
+
+            return this.writeTo(sink); // continue normal call
+        };
+
+        console.log("=== [*] Hooked okhttp3.RequestBody.writeTo() ===");
+
+    } catch (err) {
+        console.log("[!] Could not hook okhttp3.RequestBody.writeTo(): " + err);
     }
+
 });

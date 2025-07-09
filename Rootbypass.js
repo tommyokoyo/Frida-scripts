@@ -61,7 +61,7 @@ Java.perform(function() {
         "service.adb.root": "0",
     };
 
-    let commands = ["su", "getprop", "mount", "build.prop", "id", "which su"];
+    let commands = ["su", "getprop", "mount", "build.prop", "id", "which su", "netstat"];
 
     // Initailizes the prop keys as an array
     let DangerousPropsKeys = [];
@@ -228,6 +228,7 @@ Java.perform(function() {
             send("Bypassing Prop check for: ", name);
             return DangerousProps[name];
         }
+        
         return this.get.call(this, name);
     };
 });
